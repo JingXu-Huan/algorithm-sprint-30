@@ -297,8 +297,16 @@ function drawMock() {
   let second = weighted[Math.floor(Math.random() * weighted.length)];
   while (second.id === first.id) second = weighted[Math.floor(Math.random() * weighted.length)];
   $("#mockResult").innerHTML = `
-    <article class="mock-question"><small>主问题 · 30 MIN</small><h3><a class="task-title" href="${first.url}" target="_blank" rel="noreferrer">${first.id}. ${first.title} ↗</a></h3><p>${first.pattern} · 先给出暴力解，再完成最优实现；最后主动报复杂度。</p></article>
-    <article class="mock-question"><small>追问题 · 10 MIN</small><h3><a class="task-title" href="${second.url}" target="_blank" rel="noreferrer">${second.id}. ${second.title} ↗</a></h3><p>${second.pattern} · 不要求完整编码，口述状态、不变量、边界与可替代方案。</p></article>`;
+    <article class="mock-question">
+      <div class="mock-question-head"><small>主问题 · 30 MIN</small><a class="leetcode-link" href="${first.url}" target="_blank" rel="noreferrer">打开力扣 ↗</a></div>
+      <h3><a class="task-title" href="${first.url}" target="_blank" rel="noreferrer">${first.id}. ${first.title}</a></h3>
+      <p>${first.pattern} · 先给出暴力解，再完成最优实现；最后主动报复杂度。</p>
+    </article>
+    <article class="mock-question">
+      <div class="mock-question-head"><small>追问题 · 10 MIN</small><a class="leetcode-link" href="${second.url}" target="_blank" rel="noreferrer">打开力扣 ↗</a></div>
+      <h3><a class="task-title" href="${second.url}" target="_blank" rel="noreferrer">${second.id}. ${second.title}</a></h3>
+      <p>${second.pattern} · 不要求完整编码，口述状态、不变量、边界与可替代方案。</p>
+    </article>`;
   toast("模拟题已生成。现在关掉题解，开始计时。", 3500);
 }
 
