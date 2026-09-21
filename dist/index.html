@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="为 Java、Agent 与全栈开发面试定制的 30 天算法手撕训练计划。"
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <title>Algorithm Sprint 30 · 算法手撕训练</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b1020'/%3E%3Cpath d='M16 18h32v8H27v8h17v8H27v12H16z' fill='%236ee7b7'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主要导航">
+        <div class="brand" aria-label="Algorithm Sprint 30">
+          <span class="brand-mark" aria-hidden="true">A/</span>
+          <span>
+            <strong>SPRINT 30</strong>
+            <small>INTERVIEW LAB</small>
+          </span>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item is-active" data-view="today" type="button">
+            <span aria-hidden="true">⌁</span> 今日训练
+          </button>
+          <button class="nav-item" data-view="roadmap" type="button">
+            <span aria-hidden="true">▦</span> 30 天路线
+          </button>
+          <button class="nav-item" data-view="review" type="button">
+            <span aria-hidden="true">↻</span> 错题回炉
+            <b id="reviewCount" class="nav-count">0</b>
+          </button>
+          <button class="nav-item" data-view="mock" type="button">
+            <span aria-hidden="true">⌘</span> 手撕模拟
+          </button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <section class="profile-card" aria-label="当前刷题画像">
+          <p class="eyebrow">你的基线</p>
+          <div class="profile-row"><strong>286</strong><span>力扣已解</span></div>
+          <div class="profile-row"><strong>50±</strong><span>Hot100 接触</span></div>
+          <div class="profile-row"><strong>73.2%</strong><span>历史通过率</span></div>
+          <p class="profile-note">现在不缺题量，缺的是限时提取与稳定复现。</p>
+        </section>
+      </aside>
+
+      <main id="main" class="main-content" tabindex="-1">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">JINGXU / 2026 ALGORITHM RESET</p>
+            <h1 id="viewTitle">今日训练</h1>
+          </div>
+          <div class="top-actions">
+            <span class="local-save"><i></i> 进度已保存在本机</span>
+            <button id="exportBtn" class="icon-button" type="button" title="导出进度" aria-label="导出训练进度">⇩</button>
+          </div>
+        </header>
+
+        <section id="todayView" class="view is-active" aria-labelledby="viewTitle">
+          <section class="command-panel">
+            <div>
+              <p class="eyebrow" id="phaseLabel">PHASE 01 · 记忆重启</p>
+              <h2 id="dayHeadline">先证明你能写出来</h2>
+              <p id="daySummary" class="command-copy"></p>
+            </div>
+            <div class="day-meter" aria-label="训练周期进度">
+              <span id="dayNumber">DAY 01</span>
+              <div class="meter-track"><i id="dayProgressBar"></i></div>
+              <small id="dayProgressText">第 1 / 30 天</small>
+            </div>
+          </section>
+
+          <div class="day-strip-wrap">
+            <button id="prevDay" class="strip-arrow" type="button" aria-label="前一天">‹</button>
+            <div id="dayStrip" class="day-strip" aria-label="选择训练日"></div>
+            <button id="nextDay" class="strip-arrow" type="button" aria-label="后一天">›</button>
+          </div>
+
+          <div class="workspace-grid">
+            <section class="task-column" aria-labelledby="taskHeading">
+              <div class="section-heading">
+                <div>
+                  <p class="eyebrow">TODAY'S QUEUE</p>
+                  <h2 id="taskHeading">今日队列</h2>
+                </div>
+                <span id="doneRatio" class="completion-pill">0 / 3 完成</span>
+              </div>
+              <div id="taskList" class="task-list"></div>
+
+              <section class="notes-card">
+                <div class="notes-heading">
+                  <div>
+                    <p class="eyebrow">RETROSPECT</p>
+                    <h3>一句话复盘</h3>
+                  </div>
+                  <span id="notesSaved">自动保存</span>
+                </div>
+                <textarea
+                  id="dayNotes"
+                  rows="4"
+                  placeholder="例：窗口左边界移动晚了一步；下次先写清不变量……"
+                ></textarea>
+              </section>
+            </section>
+
+            <aside class="right-rail">
+              <section class="timer-card">
+                <div class="timer-topline">
+                  <span>INTERVIEW TIMER</span>
+                  <span id="timerState">READY</span>
+                </div>
+                <div id="timerDisplay" class="timer-display">45:00</div>
+                <div class="timer-controls">
+                  <button id="timerToggle" class="primary-button" type="button">开始计时</button>
+                  <button id="timerReset" class="secondary-button" type="button">重置</button>
+                </div>
+                <p class="timer-rule">5 分钟讲思路 · 25 分钟编码 · 10 分钟自测 · 5 分钟追问</p>
+              </section>
+
+              <section class="score-card">
+                <div class="score-ring" id="scoreRing" style="--score: 0">
+                  <div><strong id="readinessScore">0</strong><small>手撕就绪度</small></div>
+                </div>
+                <div class="score-detail">
+                  <p class="eyebrow">PASS BAR</p>
+                  <h3>不是 AC，是可复现</h3>
+                  <ul>
+                    <li><span>独立写出</span><b>≤ 25 min</b></li>
+                    <li><span>复杂度</span><b>主动说明</b></li>
+                    <li><span>边界用例</span><b>手动 dry-run</b></li>
+                    <li><span>追问变式</span><b>能接住 1 轮</b></li>
+                  </ul>
+                </div>
+              </section>
+
+              <section class="focus-card">
+                <p class="eyebrow">THIS WEEK</p>
+                <h3 id="weekFocus">哈希 / 双指针 / 滑窗</h3>
+                <div id="weekBars" class="week-bars"></div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section id="roadmapView" class="view" aria-label="30 天路线">
+          <section class="roadmap-intro">
+            <div>
+              <p class="eyebrow">30-DAY SYSTEM</p>
+              <h2>从“见过”到“现场写得出”</h2>
+            </div>
+            <p>每天 60–90 分钟：2 道主问题 + 1 个口述/复写任务。每 7 天只做提取测试，不补新题。</p>
+          </section>
+          <div class="phase-legend" id="phaseLegend"></div>
+          <div id="roadmapGrid" class="roadmap-grid"></div>
+        </section>
+
+        <section id="reviewView" class="view" aria-label="错题回炉">
+          <section class="review-header">
+            <div>
+              <p class="eyebrow">RECALL QUEUE</p>
+              <h2>只复习真正卡住你的题</h2>
+              <p>标记为“模糊”或“独立 AC 但未过手撕”的任务会自动进入这里。</p>
+            </div>
+            <div class="review-rule"><strong>1–3–7</strong><span>当天 / 3 天 / 7 天后再写</span></div>
+          </section>
+          <div id="reviewList" class="review-list"></div>
+        </section>
+
+        <section id="mockView" class="view" aria-label="手撕模拟">
+          <div class="mock-grid">
+            <section class="mock-console">
+              <p class="eyebrow">MOCK INTERVIEW</p>
+              <h2>45 分钟，关掉题解</h2>
+              <p>系统优先从你标记为“模糊”的中等题抽取；题库不足时从高频核心题补位。</p>
+              <button id="drawMock" class="primary-button wide" type="button">抽取一套模拟题</button>
+              <div id="mockResult" class="mock-result" aria-live="polite">
+                <div class="mock-placeholder">点击抽题后，这里会生成 1 道主问题 + 1 道追问题。</div>
+              </div>
+            </section>
+            <section class="rubric-card">
+              <p class="eyebrow">INTERVIEW RUBRIC</p>
+              <h3>自评分：满分 10</h3>
+              <ol>
+                <li><span>先澄清输入、输出、边界</span><b>2</b></li>
+                <li><span>从暴力解讲到最优解</span><b>2</b></li>
+                <li><span>代码一次成型、命名清楚</span><b>3</b></li>
+                <li><span>主动分析时空复杂度</span><b>1</b></li>
+                <li><span>样例与极端值 dry-run</span><b>2</b></li>
+              </ol>
+              <div class="pass-callout"><strong>≥ 8</strong><span>连续 3 场即可视为稳定通过线</span></div>
+            </section>
+          </div>
+        </section>
+
+        <footer class="site-footer">
+          <span>题目交叉参考</span>
+          <a href="https://www.nowcoder.com/exam/oj/ta?tpId=295" target="_blank" rel="noreferrer">牛客模板速刷 TOP101 ↗</a>
+          <a href="https://www.nowcoder.com/exam/oj/ta?tpId=354" target="_blank" rel="noreferrer">牛客面试高频 TOP202 ↗</a>
+          <a href="https://www.nowcoder.com/exam/oj/ta?tpId=386" target="_blank" rel="noreferrer">牛客算法进阶 ↗</a>
+        </footer>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
