@@ -1,9 +1,9 @@
 const phases = [
-  { name: "记忆重启", range: [1, 7], color: "#6ee7b7", focus: "哈希 / 双指针 / 滑窗" },
-  { name: "结构硬化", range: [8, 14], color: "#67e8f9", focus: "链表 / 栈 / 二叉树" },
-  { name: "中档突破", range: [15, 21], color: "#a78bfa", focus: "树 / 图 / 回溯" },
-  { name: "综合变式", range: [22, 26], color: "#fbbf24", focus: "动态规划 / 贪心 / 堆" },
-  { name: "手撕模拟", range: [27, 30], color: "#fb7185", focus: "高频综合 / 面试表达" }
+  { name: "记忆重启", range: [1, 7], color: "#15803d", focus: "哈希 / 双指针 / 滑窗" },
+  { name: "结构硬化", range: [8, 14], color: "#0369a1", focus: "链表 / 栈 / 二叉树" },
+  { name: "中档突破", range: [15, 21], color: "#6d28d9", focus: "树 / 图 / 回溯" },
+  { name: "综合变式", range: [22, 26], color: "#b45309", focus: "动态规划 / 贪心 / 堆" },
+  { name: "手撕模拟", range: [27, 30], color: "#be123c", focus: "高频综合 / 面试表达" }
 ];
 
 const lc = (slug) => `https://leetcode.cn/problems/${slug}/`;
@@ -129,7 +129,7 @@ function renderTasks() {
     const title = task.url
       ? `<a class="task-title" href="${task.url}" target="_blank" rel="noreferrer">${task.id}. ${task.title} ↗</a>`
       : `<span class="task-title">${task.title}</span>`;
-    return `<article class="task-card" data-status="${status}">
+    return `<article class="task-card" data-status="${status}" ${task.url ? `data-url="${task.url}" role="link" tabindex="0" aria-label="打开力扣题目 ${task.title}"` : ""}>
       <div class="task-index">${String(index + 1).padStart(2, "0")}</div>
       <div class="task-main">
         <div class="task-title-row">
@@ -140,10 +140,24 @@ function renderTasks() {
         </div>
         <div class="task-meta"><span>${task.pattern}</span><span>目标 ${task.minutes} min</span><span>${task.type === "problem" ? "口述 → 编码 → 自测" : "脱稿完成"}</span></div>
       </div>
+      ${task.url ? `<a class="leetcode-link" href="${task.url}" target="_blank" rel="noreferrer">去力扣 ↗</a>` : ""}
       <button class="task-action" data-day="${day}" data-index="${index}" data-status="${status}" type="button" aria-label="切换 ${task.title} 状态，当前 ${statusLabels[status]}">${statusLabels[status]}</button>
     </article>`;
   }).join("");
   $$(".task-action").forEach((button) => button.addEventListener("click", () => cycleStatus(Number(button.dataset.day), Number(button.dataset.index))));
+  $$(".task-card[data-url]").forEach((card) => {
+    const openProblem = (event) => {
+      if (event.target.closest("button, a")) return;
+      window.open(card.dataset.url, "_blank", "noopener,noreferrer");
+    };
+    card.addEventListener("click", openProblem);
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openProblem(event);
+      }
+    });
+  });
 }
 
 function renderWeekBars() {
@@ -171,14 +185,17 @@ function renderRoadmap() {
   $("#roadmapGrid").innerHTML = days.map((day, index) => {
     const number = index + 1;
     const phase = getPhase(number);
-    return `<button class="roadmap-day ${isDayComplete(number) ? "is-complete" : ""}" style="--phase-color:${phase.color}" data-day="${number}" type="button">
-      <small>DAY ${String(number).padStart(2, "0")} · ${phase.name}</small>
+    const taskLinks = day.tasks.map((task) => task.url
+      ? `<a href="${task.url}" target="_blank" rel="noreferrer">${task.id}. ${task.title}<b>↗</b></a>`
+      : `<span>${task.title}<b>练习</b></span>`).join("");
+    return `<article class="roadmap-day ${isDayComplete(number) ? "is-complete" : ""}" style="--phase-color:${phase.color}">
+      <header><small>DAY ${String(number).padStart(2, "0")} · ${phase.name}</small></header>
       <h3>${day.title}</h3>
-      <p>${day.tasks.slice(0,2).map((task) => task.id === "DRILL" ? task.title : `${task.id}. ${task.title}`).join(" · ")}</p>
-      <span class="roadmap-progress">${solvedCount(number)} / ${day.tasks.length} 手撕通过</span>
-    </button>`;
+      <div class="roadmap-links">${taskLinks}</div>
+      <div class="roadmap-footer"><span class="roadmap-progress">${solvedCount(number)} / ${day.tasks.length} 手撕通过</span><button class="open-day" data-day="${number}" type="button">查看训练</button></div>
+    </article>`;
   }).join("");
-  $$(".roadmap-day").forEach((button) => button.addEventListener("click", () => {
+  $$(".open-day").forEach((button) => button.addEventListener("click", () => {
     selectDay(Number(button.dataset.day));
     switchView("today");
   }));
@@ -193,7 +210,7 @@ function renderReview() {
   $("#reviewCount").textContent = reviewItems.length;
   $("#reviewList").innerHTML = reviewItems.length ? reviewItems.map(({ task, day, index, status }) => `<article class="review-item">
     <b>D${String(day).padStart(2,"0")}</b>
-    <div><h3>${task.id === "DRILL" ? task.title : `${task.id}. ${task.title}`}</h3><p>${task.pattern} · 当前：${statusLabels[status]} · 建议重新计时 ${task.minutes} 分钟</p></div>
+    <div><h3>${task.url ? `<a class="task-title" href="${task.url}" target="_blank" rel="noreferrer">${task.id}. ${task.title} ↗</a>` : task.title}</h3><p>${task.pattern} · 当前：${statusLabels[status]} · 建议重新计时 ${task.minutes} 分钟</p></div>
     <button class="task-action" data-day="${day}" data-index="${index}" data-status="${status}" type="button">${statusLabels[status]}</button>
   </article>`).join("") : `<div class="empty-state"><strong>回炉队列还是空的</strong>训练时诚实标记“模糊”，这里才会变成真正属于你的题单。</div>`;
   $$("#reviewList .task-action").forEach((button) => button.addEventListener("click", () => cycleStatus(Number(button.dataset.day), Number(button.dataset.index))));
@@ -204,8 +221,8 @@ function renderReadiness() {
   const passed = allStatuses.filter((status) => status === "interview").length;
   const ac = allStatuses.filter((status) => status === "ac").length;
   const score = Math.min(100, Math.round(((passed + ac * .45) / (days.length * 3)) * 100));
-  $("#readinessScore").textContent = score;
-  $("#scoreRing").style.setProperty("--score", score);
+  $("#readinessScore").textContent = `${score}%`;
+  $("#scoreRing").style.width = `${score}%`;
 }
 
 function cycleStatus(day, index) {
@@ -225,7 +242,7 @@ function selectDay(day) {
 }
 
 function switchView(view) {
-  const titles = { today: "今日训练", roadmap: "30 天路线", review: "错题回炉", mock: "手撕模拟" };
+  const titles = { today: "今日训练", roadmap: "30 天题库", review: "错题复习", mock: "模拟面试" };
   $$(".view").forEach((section) => section.classList.toggle("is-active", section.id === `${view}View`));
   $$(".nav-item").forEach((button) => button.classList.toggle("is-active", button.dataset.view === view));
   $("#viewTitle").textContent = titles[view];
@@ -280,8 +297,8 @@ function drawMock() {
   let second = weighted[Math.floor(Math.random() * weighted.length)];
   while (second.id === first.id) second = weighted[Math.floor(Math.random() * weighted.length)];
   $("#mockResult").innerHTML = `
-    <article class="mock-question"><small>主问题 · 30 MIN</small><h3>${first.id}. ${first.title}</h3><p>${first.pattern} · 先给出暴力解，再完成最优实现；最后主动报复杂度。</p></article>
-    <article class="mock-question"><small>追问题 · 10 MIN</small><h3>${second.id}. ${second.title}</h3><p>${second.pattern} · 不要求完整编码，口述状态、不变量、边界与可替代方案。</p></article>`;
+    <article class="mock-question"><small>主问题 · 30 MIN</small><h3><a class="task-title" href="${first.url}" target="_blank" rel="noreferrer">${first.id}. ${first.title} ↗</a></h3><p>${first.pattern} · 先给出暴力解，再完成最优实现；最后主动报复杂度。</p></article>
+    <article class="mock-question"><small>追问题 · 10 MIN</small><h3><a class="task-title" href="${second.url}" target="_blank" rel="noreferrer">${second.id}. ${second.title} ↗</a></h3><p>${second.pattern} · 不要求完整编码，口述状态、不变量、边界与可替代方案。</p></article>`;
   toast("模拟题已生成。现在关掉题解，开始计时。", 3500);
 }
 
