@@ -1,0 +1,9 @@
+{
+  "name": "algorithm-sprint-30",
+  "version": "1.1.0",
+  "private": true,
+  "description": "30 天算法手撕训练与模拟面试页面",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}
